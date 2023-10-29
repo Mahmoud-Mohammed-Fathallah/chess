@@ -1,23 +1,30 @@
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
 import './App.css';
+import Board from './components/Board';
+import {gameSubject,newGame} from './Game.js';
 
 function App() {
+  let [board, setBoard] = useState([]);
+  let [gameOver, setGameOver] = useState(false);
+  let [result, setResult] = useState(null);
+
+  useEffect(()=>{
+    const sub = gameSubject.subscribe(game => {
+      setBoard(game.board)
+      setGameOver(game.gameOver)
+      setResult(game.result)
+    })
+    return ()=> sub.unsubscribe();
+  },[])
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className='top-bar'>
+        {gameOver && <div className='result'>{result}</div>}
+        <button className='btn' onClick={()=>newGame()}>
+          new game
+        </button>
+      </div>
+      <Board board={board}/>
     </div>
   );
 }
